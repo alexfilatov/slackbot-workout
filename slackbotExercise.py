@@ -143,22 +143,31 @@ def fetchActiveUsers(bot):
 
     return active_users
 
-'''
+
+"""
 Selects an exercise and start time, and sleeps until the time
 period has past.
-'''
+"""
+
+
 def selectExerciseAndStartTime(bot):
     next_time_interval = selectNextTimeInterval(bot)
-    minute_interval = next_time_interval/60
+    minute_interval = next_time_interval / 60
     exercise = selectExercise(bot)
 
     # Announcement String of next lottery time
-    lottery_announcement = "NEXT LOTTERY FOR " + exercise["name"].upper() + " IS IN " + str(minute_interval) + (" MINUTES" if minute_interval != 1 else " MINUTE")
+    lottery_announcement = (
+        "NEXT LOTTERY FOR "
+        + exercise["name"].upper()
+        + " IS IN "
+        + str(minute_interval)
+        + (" MINUTES" if minute_interval != 1 else " MINUTE")
+    )
 
     # Announce the exercise to the thread
     if not bot.debug:
         requests.post(bot.post_URL, data=lottery_announcement)
-    print lottery_announcement
+    print(lottery_announcement)
 
     # Sleep the script until time is up
     if not bot.debug:
@@ -257,8 +266,7 @@ def saveUsers(bot):
 
     if not bot.debug:
         requests.post(bot.post_URL, data=s)
-    print s
-
+    print(s)
 
     # write to file
     with open('user_cache.save','wb') as f:
@@ -267,17 +275,17 @@ def saveUsers(bot):
 def isOfficeHours(bot):
     if not bot.office_hours_on:
         if bot.debug:
-            print "not office hours"
+            print("not office hours")
         return True
     now = datetime.datetime.now()
     now_time = now.time()
     if now_time >= datetime.time(bot.office_hours_begin) and now_time <= datetime.time(bot.office_hours_end):
         if bot.debug:
-            print "in office hours"
+            print("in office hours")
         return True
     else:
         if bot.debug:
-            print "out office hours"
+            print("out office hours")
         return False
 
 def main():

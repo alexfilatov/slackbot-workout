@@ -27,8 +27,7 @@ class User:
         # A record of past runs
         self.past_workouts = {}
 
-        print "New user: " + self.real_name + " (" + self.username + ")"
-
+        print("New user: " + self.real_name + " (" + self.username + ")")
 
     def storeSession(self, run_name):
         try:

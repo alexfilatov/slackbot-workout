@@ -12,8 +12,8 @@ import datetime
 from User import User
 
 # Environment variables must be set with your tokens
-USER_TOKEN_STRING =  os.environ['SLACK_USER_TOKEN_STRING']
-URL_TOKEN_STRING =  os.environ['SLACK_URL_TOKEN_STRING']
+USER_TOKEN_STRING = os.environ["SLACK_USER_TOKEN_STRING"]
+URL_TOKEN_STRING = os.environ["SLACK_URL_TOKEN_STRING"]
 
 HASH = "%23"
 
@@ -33,24 +33,24 @@ class Bot:
         # round robin store
         self.user_queue = []
 
-
     def loadUserCache(self):
-        if os.path.isfile('user_cache.save'):
-            with open('user_cache.save','rb') as f:
+        if os.path.isfile("user_cache.save"):
+            with open("user_cache.save", "rb") as f:
                 self.user_cache = pickle.load(f)
-                print "Loading " + str(len(self.user_cache)) + " users from cache."
+                print("Loading " + str(len(self.user_cache)) + " users from cache.")
                 return self.user_cache
 
         return {}
 
-    '''
+    """
     Sets the configuration file.
 
     Runs after every callout so that settings can be changed realtime
-    '''
+    """
+
     def setConfiguration(self):
         # Read variables fromt the configuration file
-        with open('config.json') as f:
+        with open("config.json") as f:
             settings = json.load(f)
 
             self.team_domain = settings["teamDomain"]
@@ -68,13 +68,23 @@ class Bot:
 
             self.debug = settings["debug"]
 
-        self.post_URL = "https://" + self.team_domain + ".slack.com/services/hooks/slackbot?token=" + URL_TOKEN_STRING + "&channel=" + HASH + self.channel_name
+        self.post_URL = (
+            "https://"
+            + self.team_domain
+            + ".slack.com/services/hooks/slackbot?token="
+            + URL_TOKEN_STRING
+            + "&channel="
+            + HASH
+            + self.channel_name
+        )
 
 
 ################################################################################
-'''
+"""
 Selects an active user from a list of users
-'''
+"""
+
+
 def selectUser(bot, exercise):
     active_users = fetchActiveUsers(bot)
 
@@ -112,18 +122,22 @@ def selectUser(bot, exercise):
             return user
 
     # If we weren't able to select one, just pick a random
-    print "Selecting user at random (queue length was " + str(len(bot.user_queue)) + ")"
+    print(
+        "Selecting user at random (queue length was " + str(len(bot.user_queue)) + ")"
+    )
     return active_users[random.randrange(0, len(active_users))]
 
 
-'''
+"""
 Fetches a list of all active users in the channel
-'''
+"""
+
+
 def fetchActiveUsers(bot):
     # Check for new members
     params = {"token": USER_TOKEN_STRING, "channel": bot.channel_id}
     response = requests.get("https://slack.com/api/channels.info", params=params)
-    user_ids = json.loads(response.text, encoding='utf-8')["channel"]["members"]
+    user_ids = json.loads(response.text, encoding="utf-8")["channel"]["members"]
 
     active_users = []
 
@@ -133,7 +147,7 @@ def fetchActiveUsers(bot):
             bot.user_cache[user_id] = User(user_id)
             if not bot.first_run:
                 # Push our new users near the front of the queue!
-                bot.user_queue.insert(2,bot.user_cache[user_id])
+                bot.user_queue.insert(2, bot.user_cache[user_id])
 
         if bot.user_cache[user_id].isActive():
             active_users.append(bot.user_cache[user_id])
@@ -179,29 +193,42 @@ def selectExerciseAndStartTime(bot):
     return exercise
 
 
-'''
+"""
 Selects the next exercise
-'''
+"""
+
+
 def selectExercise(bot):
     idx = random.randrange(0, len(bot.exercises))
     return bot.exercises[idx]
 
 
-'''
+"""
 Selects the next time interval
-'''
+"""
+
+
 def selectNextTimeInterval(bot):
     return random.randrange(bot.min_countdown * 60, bot.max_countdown * 60)
 
 
-'''
+"""
 Selects a person to do the already-selected exercise
-'''
+"""
+
+
 def assignExercise(bot, exercise):
     # Select number of reps
-    exercise_reps = random.randrange(exercise["minReps"], exercise["maxReps"]+1)
+    exercise_reps = random.randrange(exercise["minReps"], exercise["maxReps"] + 1)
 
-    winner_announcement = str(exercise_reps) + " " + str(exercise["units"]) + " " + exercise["name"] + " RIGHT NOW "
+    winner_announcement = (
+        str(exercise_reps)
+        + " "
+        + str(exercise["units"])
+        + " "
+        + exercise["name"]
+        + " RIGHT NOW "
+    )
 
     # EVERYBODY
     if random.random() < bot.group_callout_chance:
@@ -211,7 +238,7 @@ def assignExercise(bot, exercise):
             user = bot.user_cache[user_id]
             user.addExercise(exercise, exercise_reps)
 
-        logExercise(bot,"@channel",exercise["name"],exercise_reps,exercise["units"])
+        logExercise(bot, "@channel", exercise["name"], exercise_reps, exercise["units"])
 
     else:
         winners = [selectUser(bot, exercise) for i in range(bot.num_people_per_callout)]
@@ -226,25 +253,34 @@ def assignExercise(bot, exercise):
                 winner_announcement += ", "
 
             winners[i].addExercise(exercise, exercise_reps)
-            logExercise(bot,winners[i].getUserHandle(),exercise["name"],exercise_reps,exercise["units"])
+            logExercise(
+                bot,
+                winners[i].getUserHandle(),
+                exercise["name"],
+                exercise_reps,
+                exercise["units"],
+            )
 
     # Announce the user
     if not bot.debug:
         requests.post(bot.post_URL, data=winner_announcement)
-    print winner_announcement
+    print(winner_announcement)
 
 
-def logExercise(bot,username,exercise,reps,units):
+def logExercise(bot, username, exercise, reps, units):
     filename = bot.csv_filename + "_DEBUG" if bot.debug else bot.csv_filename
-    with open(filename, 'a') as f:
+    with open(filename, "a") as f:
         writer = csv.writer(f)
 
-        writer.writerow([str(datetime.datetime.now()),username,exercise,reps,units,bot.debug])
+        writer.writerow(
+            [str(datetime.datetime.now()), username, exercise, reps, units, bot.debug]
+        )
+
 
 def saveUsers(bot):
     # Write to the command console today's breakdown
     s = "```\n"
-    #s += "Username\tAssigned\tComplete\tPercent
+    # s += "Username\tAssigned\tComplete\tPercent
     s += "Username".ljust(15)
     for exercise in bot.exercises:
         s += exercise["name"] + "  "
@@ -255,7 +291,9 @@ def saveUsers(bot):
         s += user.username.ljust(15)
         for exercise in bot.exercises:
             if exercise["id"] in user.exercises:
-                s += str(user.exercises[exercise["id"]]).ljust(len(exercise["name"]) + 2)
+                s += str(user.exercises[exercise["id"]]).ljust(
+                    len(exercise["name"]) + 2
+                )
             else:
                 s += str(0).ljust(len(exercise["name"]) + 2)
         s += "\n"
@@ -269,8 +307,9 @@ def saveUsers(bot):
     print(s)
 
     # write to file
-    with open('user_cache.save','wb') as f:
-        pickle.dump(bot.user_cache,f)
+    with open("user_cache.save", "wb") as f:
+        pickle.dump(bot.user_cache, f)
+
 
 def isOfficeHours(bot):
     if not bot.office_hours_on:
@@ -279,7 +318,9 @@ def isOfficeHours(bot):
         return True
     now = datetime.datetime.now()
     now_time = now.time()
-    if now_time >= datetime.time(bot.office_hours_begin) and now_time <= datetime.time(bot.office_hours_end):
+    if now_time >= datetime.time(bot.office_hours_begin) and now_time <= datetime.time(
+        bot.office_hours_end
+    ):
         if bot.debug:
             print("in office hours")
         return True
@@ -287,6 +328,7 @@ def isOfficeHours(bot):
         if bot.debug:
             print("out office hours")
         return False
+
 
 def main():
     bot = Bot()
@@ -306,7 +348,7 @@ def main():
             else:
                 # Sleep the script and check again for office hours
                 if not bot.debug:
-                    time.sleep(5*60) # Sleep 5 minutes
+                    time.sleep(5 * 60)  # Sleep 5 minutes
                 else:
                     # If debugging, check again in 5 seconds
                     time.sleep(5)

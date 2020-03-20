@@ -62,11 +62,17 @@ class User:
             response = requests.get(
                 "https://slack.com/api/users.getPresence", params=params
             )
-            status = json.loads(response.text, encoding="utf-8")["presence"]
+            data = json.loads(response.text, encoding="utf-8")
+            if data.get("ok", False) is False:
+                raise requests.exceptions.ConnectionError(data.get("error", ""))
+            status = data.get("presence", "away")
 
             return status == "active"
         except requests.exceptions.ConnectionError:
-            print("Error fetching online status for " + self.getUserHandle())
+            print(
+                "Error fetching online status for "
+                + self.getUserHandle()
+            )
             return False
 
     def addExercise(self, exercise, reps):

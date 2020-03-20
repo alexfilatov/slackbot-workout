@@ -50,11 +50,12 @@ class User:
         return username, real_name
 
     def getUserHandle(self):
-        return ("@" + self.username).encode("utf-8")
+        return "@" + self.username
 
     """
     Returns true if a user is currently "active", else false
     """
+
     def isActive(self):
         try:
             params = {"token": USER_TOKEN_STRING, "user": self.id}

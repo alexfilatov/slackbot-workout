@@ -1,7 +1,12 @@
 config.json
 *.pyc
+__pycache__
 
 log*.csv
 log*.csv_DEBUG
 user_cache.save
 .env
+
+# local virtualenv directories
+/bin
+/lib

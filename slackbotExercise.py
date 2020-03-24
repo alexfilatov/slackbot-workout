@@ -65,6 +65,7 @@ class Bot:
             self.office_hours_on = settings["officeHours"]["on"]
             self.office_hours_begin = settings["officeHours"]["begin"]
             self.office_hours_end = settings["officeHours"]["end"]
+            self.office_hours_days = settings["officeHours"]["days"]
 
             self.debug = settings["debug"]
 
@@ -316,11 +317,18 @@ def isOfficeHours(bot):
         if bot.debug:
             print("not office hours")
         return True
+
     now = datetime.datetime.now()
+    now_day = now.weekday()  # monday = 0
+    if not now_day in bot.office_hours_days:
+        if bot.debug:
+            print("out office day")
+        return False
+
     now_time = now.time()
-    if now_time >= datetime.time(bot.office_hours_begin) and now_time <= datetime.time(
-        bot.office_hours_end
-    ):
+    is_after_day_start = now_time >= datetime.time(bot.office_hours_begin)
+    is_before_day_end = now_time <= datetime.time(bot.office_hours_end)
+    if is_after_day_start and is_before_day_end:
         if bot.debug:
             print("in office hours")
         return True

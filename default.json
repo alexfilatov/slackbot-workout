@@ -104,8 +104,8 @@
     {
       "id": 11,
       "name": "lunges",
-      "minReps": 10,
-      "maxReps": 30,
+      "minReps": 7,
+      "maxReps": 15,
       "units": "rep"
     }
   ]

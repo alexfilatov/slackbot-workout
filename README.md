@@ -44,3 +44,51 @@ A fun hack that gets Slackbot to force your teammates to work out!
     `$ python slackbotExercise.py`
 
 Run the script to start the workouts and hit ctrl+c to stop the script. Hope you have fun with it!
+
+# Install on Heroku
+
+1. [Install Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
+
+    `brew tap heroku/brew && brew install heroku`
+
+2. Login to Heroku
+
+    `heroku login`
+    
+3. Create Heroku app
+
+    `heroku create`
+    
+    As a result you'll get smth like that:
+    
+    ```
+     Creating app... done, stack is heroku-18
+     https://floating-dragon-42.heroku.com/ |
+     https://git.heroku.com/floating-dragon-42.git
+    ```
+   
+   Where `floating-dragon-42` will be your Heroku app name
+    
+4. Set up all environment variables needed for the Slack bot in the Heroku app settings, e.g.:
+
+    `heroku ci:config:set --app floating-dragon-42 SLACK_USER_TOKEN_STRING=YOURUSERTOKEN SLACK_URL_TOKEN_STRING
+    =YOURURLTOKEN`
+    
+    You can also configure `teamDomain`, `channelName` and `channelId` via environment variables, e.g.:
+    
+    `heroku ci:config:set --app floating-dragon-42 SLACK_TEAM_DOMAIN=ctrlla SLACK_CHANNEL_NAME=channelName
+     SLACK_CHANNEL_ID=channelId`
+
+5. Deploy to heroku
+
+    `git push heroku master`        
+
+6. Scale the app dyno
+
+    `heroku ps:scale bot=1`
+
+7. In case you need to check logs 
+
+    `heroku logs --tail`
+
+Heroku CLI commands: https://devcenter.heroku.com/articles/heroku-cli-commands

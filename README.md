@@ -71,12 +71,12 @@ Run the script to start the workouts and hit ctrl+c to stop the script. Hope you
     
 4. Set up all environment variables needed for the Slack bot in the Heroku app settings, e.g.:
 
-    `heroku ci:config:set --app floating-dragon-42 SLACK_USER_TOKEN_STRING=YOURUSERTOKEN SLACK_URL_TOKEN_STRING
+    `heroku config:set --app floating-dragon-42 SLACK_USER_TOKEN_STRING=YOURUSERTOKEN SLACK_URL_TOKEN_STRING
     =YOURURLTOKEN`
     
     You can also configure `teamDomain`, `channelName` and `channelId` via environment variables, e.g.:
     
-    `heroku ci:config:set --app floating-dragon-42 SLACK_TEAM_DOMAIN=ctrlla SLACK_CHANNEL_NAME=channelName
+    `heroku config:set --app floating-dragon-42 SLACK_TEAM_DOMAIN=ctrlla SLACK_CHANNEL_NAME=channelName
      SLACK_CHANNEL_ID=channelId`
 
 5. Deploy to heroku

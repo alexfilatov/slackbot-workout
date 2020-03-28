@@ -1,4 +1,3 @@
-config.json
 *.pyc
 __pycache__
 
@@ -10,3 +9,4 @@ user_cache.save
 # local virtualenv directories
 /bin
 /lib
+.idea

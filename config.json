@@ -1,0 +1,49 @@
+{
+  "teamDomain": "",
+  "channelName": "",
+  "channelId": "",
+
+  "officeHours": {
+    "on": true,
+    "begin": 9,
+    "end": 17,
+    "days": [0, 1, 2, 3, 4]
+  },
+
+  "debug": false,
+
+  "callouts": {
+    "timeBetween": {
+      "minTime": 50,
+      "maxTime": 60,
+      "units": "minutes"
+    },
+    "numPeople": 15,
+    "slidingWindowSize": 20,
+    "groupCalloutChance": 0.05
+  },
+
+  "exercises": [
+    {
+      "id": 0,
+      "name": "pushups",
+      "minReps": 10,
+      "maxReps": 15,
+      "units": "rep"
+    },
+    {
+      "id": 1,
+      "name": "planks",
+      "minReps": 20,
+      "maxReps": 60,
+      "units": "second"
+    },
+    {
+      "id": 11,
+      "name": "squats",
+      "minReps": 10,
+      "maxReps": 30,
+      "units": "rep"
+    }
+  ]
+}
